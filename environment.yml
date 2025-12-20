@@ -10,6 +10,7 @@ dependencies:
   - scikit-learn
   - imbalanced-learn
   - matplotlib
+  - seaborn
 
   # Modelli extra (se il grader li supporta)
   - xgboost
