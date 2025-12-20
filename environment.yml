@@ -2,15 +2,18 @@ name: mlproject
 channels:
   - conda-forge
   - defaults
+
 dependencies:
-  - python>=3.13
-  - catboost>=1.2.8
-  - imbalanced-learn>=0.13.0
-  - interpret>=0.6.4
-  - lightgbm>=4.6.0
-  - matplotlib>=3.10.7
-  - numpy>=2.3.5
-  - pandas>=2.3.3
-  - scikit-learn>=1.7.2
-  - seaborn>=0.13.2
-  - xgboost>=3.1.2
+  - python=3.11
+  - numpy
+  - pandas
+  - scikit-learn
+  - imbalanced-learn
+  - matplotlib
+
+  # Modelli extra (se il grader li supporta)
+  - xgboost
+  - lightgbm
+  - catboost
+  - interpret
+
