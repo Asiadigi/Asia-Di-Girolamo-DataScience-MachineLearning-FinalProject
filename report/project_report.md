@@ -35,7 +35,8 @@ The experimental results demonstrate that **CatBoost** outperforms the other mod
 - [4. Results](#4-results)
   - [4.1 Experimental Setup](#41-experimental-setup)
   - [4.2 Performance Evaluation](#42-performance-evaluation)
-  - [4.3 Analysis of Results](#43-analysis-of-results)
+  - [4.3 Analysis of Results and Visualizations](#43-analysis-of-results-and-visualizations)
+    - [Visual Analysis](#visual-analysis)
 - [5. Discussion](#5-discussion)
 - [6. Conclusion](#6-conclusion)
   - [6.1 Summary](#61-summary)
@@ -152,12 +153,23 @@ The summary of our experimental results is presented in Table 1 below.
 
 Table 1: Comparative performance metrics of the implemented models on the test set.
 
-## 4.3 Analysis of Results
-1. The Winner: CatBoost achieved the highest accuracy (77.5%) and the best AUC score (0.814). This indicates it is the most robust model for ranking borrowers by risk.
+## 4.3 Analysis of Results and Visualizations
 
-2. Ensemble Power: All ensemble methods (Random Forest, XGBoost, AdaBoost) significantly outperformed the single Decision Tree (60.5%). The single tree likely suffered from overfitting, memorizing the training data rather than learning generalizable patterns.
+1. **The Winner:** CatBoost achieved the highest accuracy (77.5%) and the best AUC score (0.814). This indicates it is the most robust model for ranking borrowers by risk.
+2. **Ensemble Power:** All ensemble methods (Random Forest, XGBoost, AdaBoost) significantly outperformed the single Decision Tree (60.5%). The single tree likely suffered from overfitting.
+3. **KNN Performance:** KNN performed reasonably well (72.5%) but lagged behind the boosting methods.
 
-3. KNN Performance: KNN performed reasonably well (72.5%) but lagged behind the boosting methods, suggesting that the decision boundary is complex and high-dimensional, where distance-based metrics struggle compared to tree-based splits.
+### Visual Analysis
+
+To better understand the model performance, we analyze the Confusion Matrices. The matrix below shows how our best model, **CatBoost**, classifies the customers. It shows a good balance between true positives and true negatives.
+
+![CatBoost Confusion Matrix](confusion_matrix_CatBoost.png)
+*Figure 1: Confusion Matrix of the CatBoost model (Best Performer)*
+
+Comparing this with a simple **Decision Tree**, we can see why the ensemble method is superior. The Decision Tree makes significantly more classification errors.
+
+![Decision Tree Confusion Matrix](confusion_matrix_Decision_Tree.png)
+*Figure 2: Confusion Matrix of the Decision Tree (Baseline)*
 
 # 5. Discussion
 Interpretation of Findings
