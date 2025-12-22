@@ -236,4 +236,4 @@ conda activate mlproject
 python main.py
 
 Appendix C: AI Assistance Statement
-This project utilized AI tools (Antigravity, Gemini 3.0) primarily for debugging and code optimization purposes. A detailed declaration of usage is available in the `AI_LOG.md` file included in the GitHub repository.
+This project utilized AI tools (Antigravity, Gemini 3.0, ChatGPT) primarily for debugging and code optimization purposes. A detailed declaration of usage is available in the `AI_LOG.md` file included in the GitHub repository.
