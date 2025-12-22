@@ -94,7 +94,7 @@ The following models are trained and evaluated in this study:
 - Dependencies are automatically handled by environment.yml.
   
 ## AI usage
-I utilized AI tools (Antigravity, Gemini 3.0) to assist with the technical development of this project.
+I utilized AI tools (Antigravity, Gemini 3.0, ChatGPT) to assist with the technical development of this project.
 
 Specifically, AI assistance was used for:
 - Debugging & Error Resolution: Solving complex compatibility issues (e.g., the scikit-learn vs. CatBoost version conflict) and fixing execution errors.
