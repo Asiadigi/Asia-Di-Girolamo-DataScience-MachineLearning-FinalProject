@@ -51,7 +51,7 @@ The experimental results demonstrate that **CatBoost** outperforms the other mod
     - [7.2 Calibration insights](#72-calibration-insights)
     - [7.3 Cost-sensitive threshold optimization](#73-cost-sensitive-threshold-optimization)
     - [7.4 Robustness: class weighting vs SMOTE](#74-robustness-class-weighting-vs-smote)
-  - [7.5 Visual Analysis: Confusion Matrices](#75-visual-analysis-confusion-matrices)
+  - [7.5 Visual Analysis of Results](#75-visual-analysis-of-results)
 - [8. Conclusion](#8-conclusion)
   - [8.1 Summary of Findings](#81-summary-of-findings)
   - [8.2 Limitations and Future Work](#82-limitations-and-future-work)
@@ -280,15 +280,15 @@ We compare imbalance handling strategies on a representative model (Random Fores
 
 **Interpretation:**  
 For this dataset and model, generating synthetic minority samples helped the classifier reduce costly false negatives more than weighting alone. However, SMOTE can also introduce artifacts, so the conclusion is empirical and context-specific.
-## 7.5 Visual Analysis: Confusion Matrices
+## 7.5 Visual Analysis of Results
 
 > **Note on Figures:**
-> Due to PDF rendering limitations, the high-resolution images for the Confusion Matrices are provided as separate files within the `report/` folder of the submitted repository. Please refer to:
-> * **Figure 1:** `confusion_matrix_CatBoost.png` (Best Model)
-> * **Figure 2:** `confusion_matrix_LogisticRegression.png` (Baseline)
+> Please note that the high-resolution visualization files referenced in this analysis are stored externally to maintain document formatting compatibility. They can be found in the `report/` directory of the submitted repository:
+> * **Figure 1:** `confusion_matrix_CatBoost.png` (Shows the best performing model with minimized False Negatives).
+> * **Figure 2:** `confusion_matrix_LogisticRegression.png` (Shows the baseline comparison).
 
 **Analysis:**
-The CatBoost matrix (Figure 1) demonstrates a superior balance in classification, specifically minimizing False Negatives (31) compared to the baseline. This reduction is critical as it directly lowers the estimated financial cost for the institution.
+By comparing these matrices, we observe that CatBoost (Figure 1) provides a better trade-off between Precision and Recall compared to the Logistic Regression baseline (Figure 2), directly impacting the cost minimization objective described in Section 4.4.
 
 # 8. Conclusion
 
