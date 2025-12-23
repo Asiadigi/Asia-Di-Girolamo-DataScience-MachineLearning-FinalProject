@@ -11,7 +11,7 @@ output: pdf_document
 
 Financial institutions face significant risks related to borrower default. Accurately predicting whether a customer will fail to repay a loan is critical for minimizing capital losses and maintaining economic stability. This project investigates the efficacy of various Machine Learning algorithms in predicting credit default risk. By implementing a robust data processing pipeline that includes feature scaling, categorical encoding, and stratified sampling, we compared the performance of six distinct models: Logistic Regression, K-Nearest Neighbors (KNN), Decision Trees, Random Forest, XGBoost, and CatBoost.
 
-The experimental results demonstrate that **CatBoost** outperforms the other models, achieving an Accuracy of **77.5%** and a Receiver Operating Characteristic Area Under Curve (ROC-AUC) score of **0.814**. The study highlights the superiority of Gradient Boosting techniques over traditional linear models and single decision trees for complex financial data. Furthermore, we discuss the technical challenges related to library compatibility in production environments and the importance of reproducibility in ML pipelines.
+The experimental results demonstrate that **CatBoost** outperforms the other models, achieving an Accuracy of **78.5%** and a Receiver Operating Characteristic Area Under Curve (ROC-AUC) score of **0.817**. The study highlights the superiority of Gradient Boosting techniques over traditional linear models and single decision trees for complex financial data. Furthermore, we discuss the technical challenges related to library compatibility in production environments and the importance of reproducibility in ML pipelines.
 
 **Keywords:** Credit Risk, Machine Learning, CatBoost, Gradient Boosting, Financial Prediction, Python.
 
@@ -51,7 +51,10 @@ The experimental results demonstrate that **CatBoost** outperforms the other mod
     - [7.2 Calibration insights](#72-calibration-insights)
     - [7.3 Cost-sensitive threshold optimization](#73-cost-sensitive-threshold-optimization)
     - [7.4 Robustness: class weighting vs SMOTE](#74-robustness-class-weighting-vs-smote)
-  - [8. Conclusion](#8-conclusion)
+  - [7.5 Visual Analysis: Confusion Matrices](#75-visual-analysis-confusion-matrices)
+- [8. Conclusion](#8-conclusion)
+  - [8.1 Summary of Findings](#81-summary-of-findings)
+  - [8.2 Limitations and Future Work](#82-limitations-and-future-work)
 - [References](#references)
 - [Appendices](#appendices)
 
@@ -277,31 +280,34 @@ We compare imbalance handling strategies on a representative model (Random Fores
 
 **Interpretation:**  
 For this dataset and model, generating synthetic minority samples helped the classifier reduce costly false negatives more than weighting alone. However, SMOTE can also introduce artifacts, so the conclusion is empirical and context-specific.
-## 8. Conclusion
+## 7.5 Visual Analysis: Confusion Matrices
+
+> **Note on Figures:**
+> Due to PDF rendering limitations, the high-resolution images for the Confusion Matrices are provided as separate files within the `report/` folder of the submitted repository. Please refer to:
+> * **Figure 1:** `confusion_matrix_CatBoost.png` (Best Model)
+> * **Figure 2:** `confusion_matrix_LogisticRegression.png` (Baseline)
+
+**Analysis:**
+The CatBoost matrix (Figure 1) demonstrates a superior balance in classification, specifically minimizing False Negatives (31) compared to the baseline. This reduction is critical as it directly lowers the estimated financial cost for the institution.
+
+# 8. Conclusion
 
 This project demonstrates that strong credit default prediction is not only about training a high-AUC model, but about producing **decision-useful probabilities** under realistic constraints.
 
-Main takeaways:
-1. **Cost-sensitive evaluation changes the ranking of models** compared to accuracy or ROC AUC alone.
-2. **Probability calibration matters**: calibrated probabilities are more trustworthy for thresholding and risk interpretation.
-3. **Threshold optimization is essential** when costs are asymmetric; 0.5 is rarely optimal in credit risk.
-4. Among tested models, **CatBoost** achieved the lowest expected cost while preserving strong discrimination and calibration performance.
-5. Robustness checks suggest that **SMOTE** can outperform simple class weighting in terms of cost for certain models.
-This project implemented a complete, reproducible pipeline for credit default prediction with a strong focus on decision-relevant evaluation. The key results are:
+## 8.1 Summary of Findings
+We successfully implemented a reproducible pipeline for credit risk assessment. The experimental results highlight the following key outcomes:
 
-CatBoost is the best overall model in our setting, achieving the lowest financial cost (167) and the strongest ROC/PR ranking performance.
+1.  **CatBoost Superiority:** Among all tested models, **CatBoost** emerged as the best performer, achieving an Accuracy of **78.5%**, an ROC-AUC of **0.817**, and the lowest financial cost (**167**). This confirms the effectiveness of Gradient Boosting on tabular financial data.
+2.  **Cost-Sensitive Impact:** Incorporating a business-specific cost matrix changed the model ranking compared to standard accuracy metrics. By optimizing the decision threshold for asymmetric costs (where False Negatives are expensive), we significantly reduced the potential capital loss.
+3.  **Calibration Importance:** Post-hoc calibration (specifically sigmoid scaling) proved essential for transforming raw model scores into trustworthy probabilities, enabling more precise risk interpretation.
+4.  **Robustness Strategies:** Our experiments showed that for certain models (like Random Forest), **SMOTE** oversampling outperformed simple class weighting in reducing total cost, highlighting the need for empirical validation of imbalance-handling techniques.
 
-Calibration matters: post-hoc calibration (especially sigmoid/Platt scaling) improves the interpretability and usefulness of predicted probabilities for risk decisions.
-
-Cost-sensitive evaluation changes model selection and threshold choice: a model with slightly lower AUC may still be preferable if it reduces expensive false negatives under asymmetric costs.
-
-Robustness checks are important: SMOTE can outperform class weighting for certain models (as shown for Random Forest), highlighting the need to validate imbalance-handling decisions rather than assuming one method is universally best.
-
-Limitations and future work:
-- Extend evaluation with confidence intervals (e.g., bootstrap) for metrics and cost.
-- Explore more systematic hyperparameter tuning (Bayesian optimization) under the cost objective.
-- Add interpretability layers (global + local explanations) and fairness diagnostics if demographic variables exist.
-- Validate calibration and threshold stability on a true out-of-time split to mimic real credit portfolio drift.
+## 8.2 Limitations and Future Work
+While the current pipeline is robust, future iterations could further enhance performance:
+* **Confidence Intervals:** Extend evaluation with bootstrapping to quantify the uncertainty of metrics and cost estimates.
+* **Hyperparameter Tuning:** Implement systematic Bayesian optimization (e.g., Optuna) specifically targeting the *cost objective* rather than just AUC.
+* **Explainability:** Integrate global and local explanation tools (SHAP values) to provide transparency for loan officers.
+* **Out-of-Time Validation:** Test calibration and threshold stability on a temporal split to simulate real-world credit portfolio drift.
 
 # References 
 1. Prokhorenkova, L., Gusev, G., Vorobev, A., Dorogush, A. V., & Gulin, A. (2018). CatBoost: unbiased boosting with categorical features. Advances in neural information processing systems, 31.
