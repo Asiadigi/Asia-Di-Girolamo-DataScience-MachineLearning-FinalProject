@@ -7,7 +7,7 @@ geometry: margin=2.5cm
 output: pdf_document
 ---
 
-# Abstract
+# 1. Abstract
 
 Financial institutions face significant risks related to borrower default. Accurately predicting whether a customer will fail to repay a loan is critical for minimizing capital losses and maintaining economic stability. This project investigates the efficacy of various Machine Learning algorithms in predicting credit default risk. By implementing a robust data processing pipeline that includes feature scaling, categorical encoding, and stratified sampling, we compared the performance of six distinct models: Logistic Regression, K-Nearest Neighbors (KNN), Decision Trees, Random Forest, XGBoost, and CatBoost.
 
@@ -21,38 +21,46 @@ The experimental results demonstrate that **CatBoost** outperforms the other mod
 
 - [Credit Default Prediction: A Comparative Analysis of Machine Learning Models](#credit-default-prediction-a-comparative-analysis-of-machine-learning-models)
   - [output: pdf\_document](#output-pdf_document)
-- [Abstract](#abstract)
+- [1. Abstract](#1-abstract)
 - [Table of Contents](#table-of-contents)
-- [1. Introduction](#1-introduction)
+- [2. Introduction](#2-introduction)
   - [Background and Motivation](#background-and-motivation)
   - [Problem Statement](#problem-statement)
   - [Objectives and Goals](#objectives-and-goals)
-- [2. Literature Review](#2-literature-review)
-- [3. Methodology](#3-methodology)
-  - [3.1 Data Description](#31-data-description)
-  - [3.2 Approach](#32-approach)
-  - [3.3 Implementation](#33-implementation)
-- [4. Results](#4-results)
-  - [4.1 Experimental Setup](#41-experimental-setup)
-  - [4.2 Performance Evaluation](#42-performance-evaluation)
-  - [4.3 Analysis of Results and Visualizations](#43-analysis-of-results-and-visualizations)
-    - [Visual Analysis](#visual-analysis)
-- [5. Discussion](#5-discussion)
-  - [Interpretation of Findings](#interpretation-of-findings)
-  - [Challenges Encountered](#challenges-encountered)
-- [6. Conclusion](#6-conclusion)
-  - [6.1 Summary](#61-summary)
-  - [6.2 Future Work](#62-future-work)
+  - [3. Research Question and Relevant Literature](#3-research-question-and-relevant-literature)
+    - [Research question](#research-question)
+    - [Relevant literature (high-level)](#relevant-literature-high-level)
+  - [4. Methodology / Algorithm and Complexity](#4-methodology--algorithm-and-complexity)
+    - [4.1 Data Description](#41-data-description)
+    - [4.2 Models](#42-models)
+    - [4.3 Evaluation framework and metrics](#43-evaluation-framework-and-metrics)
+    - [4.4 Cost-sensitive objective](#44-cost-sensitive-objective)
+    - [4.5 Complexity (qualitative)](#45-complexity-qualitative)
+  - [5. Implementation Discussion (Code and Performance)](#5-implementation-discussion-code-and-performance)
+    - [5.1 Project structure and pipeline design](#51-project-structure-and-pipeline-design)
+    - [5.2 Unsupervised analysis (diagnostic step)](#52-unsupervised-analysis-diagnostic-step)
+    - [5.3 Calibration experiments](#53-calibration-experiments)
+    - [5.4 Performance considerations](#54-performance-considerations)
+  - [6. Codebase Maintenance and Updating (Git, Testing, Reproducibility)](#6-codebase-maintenance-and-updating-git-testing-reproducibility)
+    - [6.1 Version control (Git)](#61-version-control-git)
+    - [6.2 Reproducibility](#62-reproducibility)
+    - [6.3 Testing and safe refactoring (recommended practice)](#63-testing-and-safe-refactoring-recommended-practice)
+    - [6.4 How to update/extend the project](#64-how-to-updateextend-the-project)
+  - [7. Results](#7-results)
+    - [7.1 Main comparison (calibrated + regularized setting)](#71-main-comparison-calibrated--regularized-setting)
+    - [7.2 Calibration insights](#72-calibration-insights)
+    - [7.3 Cost-sensitive threshold optimization](#73-cost-sensitive-threshold-optimization)
+    - [7.4 Robustness: class weighting vs SMOTE](#74-robustness-class-weighting-vs-smote)
+  - [8. Conclusion](#8-conclusion)
 - [References](#references)
 - [Appendices](#appendices)
 
 \newpage
 
-# 1. Introduction
+# 2. Introduction
 
 ## Background and Motivation
 Credit default risk—the risk that a lender takes on in the chance that a borrower will be unable to make required payments on their debt obligations—is one of the most fundamental challenges in the banking and financial services industry. Traditional methods of credit scoring often rely on linear statistical techniques or manual rule-based systems, which may fail to capture complex, non-linear relationships between a borrower's demographic data, financial history, and their likelihood of default.
-
 In the era of Big Data, Machine Learning (ML) offers powerful tools to automate and improve the accuracy of these predictions. By analyzing historical data, ML models can identify subtle patterns that human analysts might miss, leading to more informed lending decisions.
 
 ## Problem Statement
@@ -65,44 +73,64 @@ The primary objectives of this study are:
 3.  To rigorously evaluate these models using appropriate metrics for imbalanced datasets, specifically focusing on **F1-Score** and **ROC-AUC** in addition to standard Accuracy.
 4.  To identify the best-performing model for deployment in a hypothetical production environment.
 
-# 2. Literature Review
+## 3. Research Question and Relevant Literature
 
-The application of Machine Learning to credit risk analysis has been extensively studied. Early approaches primarily utilized **Logistic Regression** and **Linear Discriminant Analysis (LDA)** due to their interpretability and regulatory acceptance. However, widely cited research has shown that these linear models often underperform when the decision boundary is highly non-linear.
+### Research question
+**How can we design and evaluate a credit default prediction pipeline that produces accurate *and* decision-useful probabilities under class imbalance and asymmetric costs?**
 
-In recent years, ensemble methods have become the state-of-the-art. **Random Forest**, introduced by Breiman (2001), demonstrated that aggregating multiple decision trees could significantly reduce variance and improve generalization. More recently, Gradient Boosting frameworks have taken the lead in tabular data competitions. **XGBoost** (Chen & Guestrin, 2016) introduced a scalable tree boosting system that became a standard in the industry.
+This question is different from “maximize accuracy.” In credit scoring, the operational objective is often to minimize expected losses or maximize expected profit subject to constraints. That requires:
 
-This project specifically explores **CatBoost** (Prokhorenkova et al., 2018), a newer gradient boosting library developed by Yandex. Literature suggests that CatBoost handles categorical features more effectively than its predecessors (XGBoost and LightGBM) without extensive preprocessing, making it particularly suitable for financial datasets which often contain qualitative variables (e.g., "Purpose of Loan", "Housing Status").
+1. **Ranking quality** (e.g., ROC AUC),
+2. **Performance on the minority class** (e.g., Precision–Recall AUC),
+3. **Probability quality** (calibration, Brier score),
+4. **Decision quality** under a business cost matrix (cost-sensitive thresholding).
 
-# 3. Methodology
+### Relevant literature (high-level)
+- **Imbalanced classification**: PR-AUC is often more informative than ROC-AUC when the positive class is rare because it focuses on precision/recall trade-offs for the minority class.
+- **Probability calibration**: many strong classifiers (especially tree ensembles) produce poorly calibrated probabilities; calibration methods like **Platt scaling (sigmoid)** and **isotonic regression** can improve probabilistic interpretability.
+- **Cost-sensitive learning and thresholding**: when costs differ between FP and FN, the optimal threshold generally differs from 0.5, and should be selected by minimizing expected cost on validation data.
+- **SMOTE vs class weighting**: oversampling (SMOTE) and cost-sensitive weighting are two common strategies to address imbalance; which one works better is data-dependent and should be tested empirically.
 
-## 3.1 Data Description
-The dataset used in this project is a standard benchmark for credit default prediction. It comprises numerical and categorical features representing the profile of borrowers.
+This project follows these principles by implementing both calibration and cost-based threshold selection, and by explicitly comparing imbalance-handling methods.
 
-* **Size:** The dataset was split into training and testing sets to ensure unbiased evaluation.
-* **Features:** Key features include:
-    * *Numerical:* Credit amount, Duration of credit, Age, Installment rate.
-    * *Categorical:* Credit history, Purpose, Savings account/bonds, Present employment since, Personal status, and Sex.
-* **Target:** The binary variable `default` (0 or 1).
+## 4. Methodology / Algorithm and Complexity
+
+### 4.1 Data Description
+We work with a standard credit risk tabular dataset containing both numerical and categorical variables (e.g., loan duration, credit amount, and borrower characteristics). The target is a binary default label.
+
+Preprocessing is implemented via a scikit-learn style pipeline:
+
+- **Missing values**: handled within the preprocessing flow (imputation where needed).
+- **Categorical features**: one-hot encoding.
+- **Numerical features**: scaling (StandardScaler) to support linear models and stabilize training.
+- The transformation is fit on training data only to avoid leakage.
 
 Data quality assessment revealed no significant missing values, but standardization was required for distance-based algorithms like KNN.
 
-## 3.2 Approach
+### 4.2 Models
+We compare a diverse set of models:
 
-Our technical approach followed the standard Cross-Industry Standard Process for Data Mining (CRISP-DM) cycle:
+1. **Logistic Regression**: strong linear baseline; outputs naturally probabilistic scores.
+2. **Random Forest**: non-linear model; often strong ranking but can be miscalibrated.
+3. **Gradient boosting family**:
+   - **XGBoost**
+   - **LightGBM**
+   - **CatBoost**
+4. **Interpretable model**: **EBM/GAM-style** model (Explainable Boosting), included to explore the accuracy–interpretability trade-off.
 
-1.  **Data Preprocessing:**
-    * **Scaling:** We applied `StandardScaler` from the `scikit-learn` library to normalize numerical features. This is crucial for models like K-Nearest Neighbors (KNN), which rely on Euclidean distance calculations.
-    * **Encoding:** Categorical variables were processed to be compatible with the specific requirements of each algorithm.
-    * **Splitting:** We used `train_test_split` with a fixed `random_state=42` to ensure reproducibility. The split ratio was 80% for training and 20% for testing.
+Where relevant, we use **class weights** to address imbalance.
+ 
+ ### 4.3 Evaluation framework and metrics 
+We adopt:
 
-2.  **Model Selection:**
-    We selected a diverse set of algorithms to compare different learning strategies:
-    * *Distance-based:* K-Nearest Neighbors (KNN).
-    * *Tree-based (Single):* Decision Tree.
-    * *Bagging Ensemble:* Random Forest.
-    * *Boosting Ensembles:* AdaBoost, XGBoost, LightGBM, and CatBoost.
-
-## 3.3 Implementation
+- **Train/test split** for final reporting.
+- **Stratified K-Fold cross-validation** (10 folds) for stable estimates and to reduce variance in results.
+- Metrics:
+  - **Accuracy** (reported, but not the main objective under imbalance),
+  - **ROC AUC**,
+  - **PR AUC**,
+  - **Brier Score** for calibration quality,
+  - **Total expected cost** from a custom cost matrix.Implementation
 
 The project was implemented using **Python 3.11** within a managed **Conda** environment to ensure dependency isolation. The project structure follows industry best practices:
 
@@ -128,76 +156,152 @@ def train_model(model_class, X_train, y_train, **kwargs):
     model.fit(X_train, y_train)
     return model
 
-# 4. Results 
+### 4.4 Cost-sensitive objective
+We define asymmetric costs consistent with credit risk intuition:
 
-## 4.1 Experimental Setup 
-All experiments were conducted on a Windows-based system. To solve compatibility issues between scikit-learn versions and CatBoost, we explicitly pinned scikit-learn<1.6.0 in our environment configuration. This ensured that the AttributeError: 'CatBoostClassifier' object has no attribute '__sklearn_tags__' was resolved.
+- Cost(FN) = 5: predicting “good” when the borrower defaults.
+- Cost(FP) = 1: predicting “bad” when the borrower would not default.
 
-## 4.2 Performance Evaluation 
-We evaluated the models using three key metrics:
+Let the confusion matrix be ordered as \[\[TN, FP\], \[FN, TP\]\].  
+Then the total cost is:
 
-1. Accuracy: The ratio of correctly predicted observations.
+\[
+\text{Cost} = 5 \cdot FN + 1 \cdot FP.
+\]
 
-2. F1-Score: The harmonic mean of Precision and Recall (vital for default prediction where missing a defaulter is costly).
+This metric is used to rank models and to optimize the decision threshold.
 
-3.ROC-AUC: The ability of the model to distinguish between classes.
+### 4.5 Complexity (qualitative)
+- Logistic Regression: roughly linear in number of samples and features per iteration.
+- Random Forest: scales with number of trees × depth × samples.
+- Gradient boosting: scales with number of boosting iterations × tree complexity; often more expensive but high-performing.
+- Calibration adds overhead proportional to the calibration method:
+  - Sigmoid calibration is light (parametric).
+  - Isotonic can be heavier and more prone to overfitting on small samples.
 
-The summary of our experimental results is presented in Table 1 below.
-| Model | Accuracy | ROC AUC | Cost (Misclassification) |
-|---|---|---|---|
-| **CatBoost** | **0.785** | **0.817** | **167** |
-| Logistic Regression | 0.775 | 0.806 | 177 |
-| GAM (EBM) | 0.770 | 0.799 | 170 |
-| LightGBM | 0.770 | 0.777 | 186 |
-| XGBoost | 0.760 | 0.784 | 184 |
-| Random Forest | 0.755 | 0.795 | 177 |
 
-Table 1: Comparative performance metrics of the implemented models on the test set.
+## 5. Implementation Discussion (Code and Performance)
 
-## 4.3 Analysis of Results and Visualizations
+### 5.1 Project structure and pipeline design
+Implementation is provided in a Jupyter notebook that follows a clear sequence:
 
-1. **The Winner:** CatBoost achieved the highest accuracy (**78.5%**) and the best AUC score (**0.817**). This indicates it is the most robust model for ranking borrowers by risk.
-2. **Strong Baseline:** Logistic Regression performed surprisingly well (Accuracy 77.5%, AUC 0.806), outperforming more complex models like Random Forest. This suggests the dataset contains strong linear signals that simple models can exploit effectively.
-3. **Ensemble Comparison:** While LightGBM and XGBoost were competitive, CatBoost's handling of categorical variables likely gave it the edge in minimizing the overall cost.
+1. Data loading and initial inspection,
+2. Preprocessing pipeline (ColumnTransformer),
+3. Baseline supervised models,
+4. Unsupervised analysis (PCA + clustering),
+5. Advanced evaluation (CV + multiple metrics),
+6. Calibration experiments,
+7. Final evaluation and model comparison,
+8. Cost-sensitive threshold optimization,
+9. Robustness checks: class weighting vs SMOTE.
 
-### Visual Analysis
+A key design choice is to keep preprocessing and modeling inside consistent pipelines to avoid leakage and ensure repeatability.
+### 5.2 Unsupervised analysis (diagnostic step)
+Before finalizing supervised learning, we use PCA and clustering as a diagnostic tool to check whether there is visible structure in the feature space and whether default/non-default observations appear separable. This does not replace supervised evaluation, but provides intuition about the dataset and potential non-linearities.
 
-To better understand the model performance, we analyze the Confusion Matrices. The matrix below shows how our best model, **CatBoost**, classifies the customers. It shows a good balance between true positives and true negatives.
+### 5.3 Calibration experiments
+We explicitly test:
 
-![CatBoost Confusion Matrix](confusion_matrix_CatBoost.png)
-*Figure 1: Confusion Matrix of the CatBoost model (Best Performer)*
+- **Sigmoid (Platt scaling)** vs **Isotonic regression** calibration.
+- **Binning effect**: how the number of bins in calibration plots changes perceived “jaggedness.”
+- **Regularization** as an indirect calibration improvement (more conservative models can output less extreme, more stable probabilities).
 
-Comparing this with a simple **Decision Tree**, we can see why the ensemble method is superior. The Decision Tree makes significantly more classification errors.
+In practice, sigmoid calibration is often safer when the calibration set is not large because isotonic can overfit and produce unstable curves.
 
-![Confusion Matrix - Logistic Regression](confusion_matrix_LogisticRegression.png)
-*Figure 2: Confusion Matrix of Logistic Regression (Baseline)*
+### 5.4 Performance considerations
+Training time is manageable on a laptop-scale environment. For ensemble models, runtime is driven by number of estimators and depth. Where supported by libraries, multi-core execution can be enabled to speed up training and cross-validation.
 
-# 5. Discussion
-## Interpretation of Findings
-The superior performance of CatBoost aligns with recent trends in tabular data analysis. Its ability to handle the mix of numerical and categorical features inherent in credit data gave it an edge over XGBoost in this specific experiment. The ROC-AUC of 0.817 is particularly promising, as it suggests the model has a strong discriminative ability.
+## 6. Codebase Maintenance and Updating (Git, Testing, Reproducibility)
 
-## Challenges Encountered
-A significant portion of the project timeline was dedicated to Environment Management and Debugging.
+This section documents how the project is maintained and how results can be reproduced and extended.
 
-1. **Dependency Hell:** We encountered a critical bug where `scikit-learn` version 1.6.0 introduced breaking changes incompatible with `catboost`. We resolved this by diagnosing the stack trace and pinning the version in Conda.
-2. **Code Maintenance:** We fixed deprecated calls (removing `FrozenEstimator` which caused kernel crashes) and corrected case-sensitivity issues in the variable names (`X` vs `x`).
-3. **Path Management:** To ensure the code runs on any machine (grading requirement), we refactored all file paths to be relative (e.g., `../data/raw/`) rather than absolute or incorrect local paths.
+### 6.1 Version control (Git)
+- The repository is tracked with Git.
+- Development is organized through incremental commits that reflect meaningful changes (pipeline fixes, report updates, evaluation additions).
+- This makes the work auditable: it is possible to trace when a model, metric, or preprocessing choice changed and why.
 
-#Limitations
-While the results are strong, the recall for the minority class remains a challenge across all models. In a real-world setting, a bank might prioritize Recall over Precision to catch as many potential defaulters as possible, even at the cost of some false alarms.
-# 6. Conclusion
+### 6.2 Reproducibility
+- **Random seeds** are fixed where possible (e.g., `random_state=42`) for train/test splits, CV, and stochastic models.
+- Dependencies are managed through a Python environment (conda/venv). A `requirements.txt` or environment file should be kept aligned with the notebook imports.
+- The notebook is written to run top-to-bottom without hidden state.
 
-## 6.1 Summary 
-This project successfully implemented a comprehensive machine learning pipeline for credit default prediction. We demonstrated that Gradient Boosting techniques, specifically CatBoost, offer the best performance for this task, achieving an accuracy of 78.5% and an AUC of 0.817. We also established a reproducible coding environment using Conda and relative paths, ensuring the project meets professional software engineering standards.
+### 6.3 Testing and safe refactoring (recommended practice)
+While notebooks are often exploratory, production-quality maintenance benefits from lightweight testing:
+- Utility functions (e.g., cost computation, threshold search) can be moved into a `.py` module and tested with simple unit tests (expected confusion matrix → expected cost).
+- Continuous checks (even minimal) reduce the risk of silent evaluation bugs when iterating on the pipeline.
 
-## 6.2 Future Work
-To further improve performance, future iterations of this project could include:
+### 6.4 How to update/extend the project
+Typical extensions that fit cleanly into this codebase:
+- Add new models (e.g., calibrated linear SVM, neural nets) by plugging into the same evaluation loop.
+- Change the cost matrix to reflect a different business environment and recompute optimal thresholds.
+- Add explainability (feature importance, SHAP) while preserving the same preprocessing pipeline.
 
-1. Hyperparameter Tuning: Using GridSearchCV or Optuna to optimize the parameters of the CatBoost model.
+## 7. Results
 
-2. Class Imbalance Handling: Implementing SMOTE (Synthetic Minority Over-sampling Technique) to improve the F1-Score of the minority class.
+### 7.1 Main comparison (calibrated + regularized setting)
+Models are evaluated on multiple criteria: discrimination (ROC/PR), calibration (Brier), and decision cost.
 
-3.Feature Engineering: Creating interaction terms (e.g., loan_amount / income) to provide the models with more explicit signals.
+A representative summary (sorted by cost) is:
+
+- **CatBoost**: best total cost (≈167) with strong ROC AUC (≈0.817), PR AUC (≈0.683), and good Brier score (≈0.150).
+- **EBM/GAM**: competitive cost (≈170) with interpretability benefits.
+- **Logistic Regression**: solid baseline, competitive ROC and PR, slightly worse cost than the best model.
+- **Random Forest / XGBoost / LightGBM**: strong ranking performance but not always best under the cost function.
+
+**Interpretation:**  
+Even when several models have similar ROC AUC, the **expected cost** can differ because cost depends on FP/FN trade-offs and the chosen threshold. Therefore, model selection based on cost is more aligned with credit risk decisions than selecting purely by AUC.
+
+### 7.2 Calibration insights
+Calibration plots show that:
+- Uncalibrated ensemble models can produce probabilities that deviate from the diagonal (“perfect calibration”).
+- Sigmoid calibration tends to produce smoother, more stable improvements.
+- Isotonic calibration can be flexible but may become jagged, especially when the effective calibration sample is limited or when probabilities are concentrated in narrow ranges.
+
+This justifies using calibration not as a cosmetic step, but as a way to make probability outputs decision-relevant.
+
+### 7.3 Cost-sensitive threshold optimization
+Using the defined cost matrix (FN cost much larger than FP cost), the default threshold of 0.5 is not necessarily optimal. We scan thresholds in \([0,1]\) and compute total cost to find:
+
+\[
+t^* = \arg\min_t \{ 5\cdot FN(t) + 1\cdot FP(t)\}.
+\]
+
+**Key insight:**  
+A lower threshold than 0.5 is often optimal when missing defaulters is expensive, because the model should flag more borderline cases as risky to reduce FN counts.
+
+### 7.4 Robustness: class weighting vs SMOTE
+We compare imbalance handling strategies on a representative model (Random Forest):
+
+- **Class weighting** produced a higher cost (≈184).
+- **SMOTE** reduced the cost (≈174).
+
+**Interpretation:**  
+For this dataset and model, generating synthetic minority samples helped the classifier reduce costly false negatives more than weighting alone. However, SMOTE can also introduce artifacts, so the conclusion is empirical and context-specific.
+## 8. Conclusion
+
+This project demonstrates that strong credit default prediction is not only about training a high-AUC model, but about producing **decision-useful probabilities** under realistic constraints.
+
+Main takeaways:
+1. **Cost-sensitive evaluation changes the ranking of models** compared to accuracy or ROC AUC alone.
+2. **Probability calibration matters**: calibrated probabilities are more trustworthy for thresholding and risk interpretation.
+3. **Threshold optimization is essential** when costs are asymmetric; 0.5 is rarely optimal in credit risk.
+4. Among tested models, **CatBoost** achieved the lowest expected cost while preserving strong discrimination and calibration performance.
+5. Robustness checks suggest that **SMOTE** can outperform simple class weighting in terms of cost for certain models.
+This project implemented a complete, reproducible pipeline for credit default prediction with a strong focus on decision-relevant evaluation. The key results are:
+
+CatBoost is the best overall model in our setting, achieving the lowest financial cost (167) and the strongest ROC/PR ranking performance.
+
+Calibration matters: post-hoc calibration (especially sigmoid/Platt scaling) improves the interpretability and usefulness of predicted probabilities for risk decisions.
+
+Cost-sensitive evaluation changes model selection and threshold choice: a model with slightly lower AUC may still be preferable if it reduces expensive false negatives under asymmetric costs.
+
+Robustness checks are important: SMOTE can outperform class weighting for certain models (as shown for Random Forest), highlighting the need to validate imbalance-handling decisions rather than assuming one method is universally best.
+
+Limitations and future work:
+- Extend evaluation with confidence intervals (e.g., bootstrap) for metrics and cost.
+- Explore more systematic hyperparameter tuning (Bayesian optimization) under the cost objective.
+- Add interpretability layers (global + local explanations) and fairness diagnostics if demographic variables exist.
+- Validate calibration and threshold stability on a true out-of-time split to mimic real credit portfolio drift.
 
 # References 
 1. Prokhorenkova, L., Gusev, G., Vorobev, A., Dorogush, A. V., & Gulin, A. (2018). CatBoost: unbiased boosting with categorical features. Advances in neural information processing systems, 31.
@@ -205,7 +309,8 @@ To further improve performance, future iterations of this project could include:
 3. Pedregosa, F., et al. (2011). Scikit-learn: Machine Learning in Python. Journal of Machine Learning Research, 12, 2825-2830.
 4.Breiman, L. (2001). Random forests. Machine learning, 45(1), 5-32.
 5. Dua, D. and Graff, C. (2019). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine, CA: University of California, School of Information and Computer Science. (German Credit Data).
-
+6.Zadrozny, B., & Elkan, C. (2002). Transforming classifier scores into accurate multiclass probability estimates. KDD.
+7.Chawla, N. V., et al. (2002). SMOTE: Synthetic Minority Over-sampling Technique. JAIR.
 
 
 # Appendices
