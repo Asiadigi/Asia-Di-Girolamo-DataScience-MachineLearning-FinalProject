@@ -312,7 +312,6 @@ Limitations and future work:
 6.Zadrozny, B., & Elkan, C. (2002). Transforming classifier scores into accurate multiclass probability estimates. KDD.
 7.Chawla, N. V., et al. (2002). SMOTE: Synthetic Minority Over-sampling Technique. JAIR.
 
-
 # Appendices
 Appendix A: Project Structure
 The full source code is available in the submitted repository with the following structure:
