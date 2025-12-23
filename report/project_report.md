@@ -38,6 +38,8 @@ The experimental results demonstrate that **CatBoost** outperforms the other mod
   - [4.3 Analysis of Results and Visualizations](#43-analysis-of-results-and-visualizations)
     - [Visual Analysis](#visual-analysis)
 - [5. Discussion](#5-discussion)
+  - [Interpretation of Findings](#interpretation-of-findings)
+  - [Challenges Encountered](#challenges-encountered)
 - [6. Conclusion](#6-conclusion)
   - [6.1 Summary](#61-summary)
   - [6.2 Future Work](#62-future-work)
@@ -141,23 +143,22 @@ We evaluated the models using three key metrics:
 3.ROC-AUC: The ability of the model to distinguish between classes.
 
 The summary of our experimental results is presented in Table 1 below.
-| Model | Accuracy | F1-Score | ROC AUC |
-| :--- | :--- | :--- | :--- |
-| **CatBoost** | **0.775** | **0.545** | **0.814** |
-| Random Forest | 0.765 | 0.515 | 0.798 |
-| XGBoost | 0.755 | 0.559 | 0.775 |
-| AdaBoost | 0.755 | 0.559 | 0.775 |
-| LightGBM | 0.730 | 0.491 | 0.770 |
-| KNN | 0.725 | 0.433 | 0.729 |
-| Decision Tree | 0.605 | 0.368 | 0.542 |
+| Model | Accuracy | ROC AUC | Cost (Misclassification) |
+|---|---|---|---|
+| **CatBoost** | **0.785** | **0.817** | **167** |
+| Logistic Regression | 0.775 | 0.806 | 177 |
+| GAM (EBM) | 0.770 | 0.799 | 170 |
+| LightGBM | 0.770 | 0.777 | 186 |
+| XGBoost | 0.760 | 0.784 | 184 |
+| Random Forest | 0.755 | 0.795 | 177 |
 
 Table 1: Comparative performance metrics of the implemented models on the test set.
 
 ## 4.3 Analysis of Results and Visualizations
 
-1. **The Winner:** CatBoost achieved the highest accuracy (77.5%) and the best AUC score (0.814). This indicates it is the most robust model for ranking borrowers by risk.
-2. **Ensemble Power:** All ensemble methods (Random Forest, XGBoost, AdaBoost) significantly outperformed the single Decision Tree (60.5%). The single tree likely suffered from overfitting.
-3. **KNN Performance:** KNN performed reasonably well (72.5%) but lagged behind the boosting methods.
+1. **The Winner:** CatBoost achieved the highest accuracy (**78.5%**) and the best AUC score (**0.817**). This indicates it is the most robust model for ranking borrowers by risk.
+2. **Strong Baseline:** Logistic Regression performed surprisingly well (Accuracy 77.5%, AUC 0.806), outperforming more complex models like Random Forest. This suggests the dataset contains strong linear signals that simple models can exploit effectively.
+3. **Ensemble Comparison:** While LightGBM and XGBoost were competitive, CatBoost's handling of categorical variables likely gave it the edge in minimizing the overall cost.
 
 ### Visual Analysis
 
@@ -168,29 +169,26 @@ To better understand the model performance, we analyze the Confusion Matrices. T
 
 Comparing this with a simple **Decision Tree**, we can see why the ensemble method is superior. The Decision Tree makes significantly more classification errors.
 
-![Decision Tree Confusion Matrix](confusion_matrix_Decision_Tree.png)
-*Figure 2: Confusion Matrix of the Decision Tree (Baseline)*
+![Confusion Matrix - Logistic Regression](confusion_matrix_LogisticRegression.png)
+*Figure 2: Confusion Matrix of Logistic Regression (Baseline)*
 
 # 5. Discussion
-Interpretation of Findings
-The superior performance of CatBoost aligns with recent trends in tabular data analysis. Its ability to handle the mix of numerical and categorical features inherent in credit data gave it an edge over XGBoost in this specific experiment. The ROC-AUC of 0.814 is particularly promising, as it suggests the model has a strong discriminative ability.
+## Interpretation of Findings
+The superior performance of CatBoost aligns with recent trends in tabular data analysis. Its ability to handle the mix of numerical and categorical features inherent in credit data gave it an edge over XGBoost in this specific experiment. The ROC-AUC of 0.817 is particularly promising, as it suggests the model has a strong discriminative ability.
 
-Challenges Encountered
+## Challenges Encountered
 A significant portion of the project timeline was dedicated to Environment Management and Debugging.
 
-1. Dependency Hell: We encountered a critical bug where scikit-learn version 1.6.0 introduced breaking changes that were incompatible with the stable version of catboost. We resolved this by diagnosing the stack trace and downgrading scikit-learn via Conda.
-
-2. Reproducibility: Ensuring that results were identical across runs required meticulous setting of random_state=42 in every stochastic component of the pipeline, from data splitting to model initialization.
-
-3.Path Management: To ensure the code runs on any machine (grading requirement), we refactored all file paths to be relative (e.g., data/raw/) rather than absolute.
+1. **Dependency Hell:** We encountered a critical bug where `scikit-learn` version 1.6.0 introduced breaking changes incompatible with `catboost`. We resolved this by diagnosing the stack trace and pinning the version in Conda.
+2. **Code Maintenance:** We fixed deprecated calls (removing `FrozenEstimator` which caused kernel crashes) and corrected case-sensitivity issues in the variable names (`X` vs `x`).
+3. **Path Management:** To ensure the code runs on any machine (grading requirement), we refactored all file paths to be relative (e.g., `../data/raw/`) rather than absolute or incorrect local paths.
 
 #Limitations
-While the results are strong, the F1-Score for all models hovers around 0.55. This suggests that the models still struggle somewhat with the "Default" class (likely the minority class). In a real-world setting, a bank might prioritize Recall over Precision to catch as many potential defaulters as possible, even at the cost of some false alarms.
-
+While the results are strong, the recall for the minority class remains a challenge across all models. In a real-world setting, a bank might prioritize Recall over Precision to catch as many potential defaulters as possible, even at the cost of some false alarms.
 # 6. Conclusion
 
 ## 6.1 Summary 
-This project successfully implemented a comprehensive machine learning pipeline for credit default prediction. We demonstrated that Gradient Boosting techniques, specifically CatBoost, offer the best performance for this task, achieving an accuracy of 77.5% and an AUC of 0.814. We also established a reproducible coding environment using Conda and relative paths, ensuring the project meets professional software engineering standards.
+This project successfully implemented a comprehensive machine learning pipeline for credit default prediction. We demonstrated that Gradient Boosting techniques, specifically CatBoost, offer the best performance for this task, achieving an accuracy of 78.5% and an AUC of 0.817. We also established a reproducible coding environment using Conda and relative paths, ensuring the project meets professional software engineering standards.
 
 ## 6.2 Future Work
 To further improve performance, future iterations of this project could include:
