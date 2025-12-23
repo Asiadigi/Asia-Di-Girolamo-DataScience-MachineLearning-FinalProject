@@ -6,7 +6,7 @@ Which Machine Learning algorithm performs best for predicting credit default ris
 ## Project Overview
 This project implements a reproducible Machine Learning pipeline to predict credit default risk using the German Credit dataset. It processes the raw data, applies feature scaling and encoding, and evaluates multiple classification models to minimize financial risk for lenders.
 
-**Key Finding:** CatBoost achieved the best performance with **77.5% Accuracy** and **0.814 ROC-AUC**, outperforming traditional models like Decision Trees.
+**Key Finding:** CatBoost achieved the best performance with **78.5% Accuracy** and **0.817 ROC-AUC**, outperforming traditional models like Decision Trees.
 
 ## Project Structure
 ```text
