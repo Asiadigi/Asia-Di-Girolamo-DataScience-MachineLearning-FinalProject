@@ -112,8 +112,11 @@ cd Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject
 
 # Sanity check (project root):
 # You must see BOTH "environment.yml" and "main.py" here.
-# If you only see a subfolder called "MLproject/", then run:
-cd MLproject
+# If you only see a subfolder called "MLproject/", run:
+#   cd MLproject
+
+Only run `cd MLproject` if you see a subfolder named `MLproject/`. If you already see `environment.yml` and `main.py` in the current directory, you are already at the project root—do NOT `cd MLproject`.
+
 
 # Only run this if you do NOT see environment.yml and main.py in the current directory.
 # Copy/paste quick start (only if the runnable root is MLproject/)
