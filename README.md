@@ -103,12 +103,20 @@ For more details, see AI_LOG.md.
 
 > **Important (project root):** The runnable code is inside the `MLproject/` subfolder of this repository.
 > After cloning, you must `cd` into `MLproject/` **before** creating the conda environment or running any scripts.
+Note: If you already see environment.yml and main.py in the current directory, you are already at the runnable project root and you should NOT cd MLproject.
 
 ### Step 0 — Move into the correct folder
 
-After cloning the repository, you must move into the `MLproject/` folder (this is the runnable project root).
+# After cloning, enter the repository:
+cd Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject
 
-# --- Copy/paste quick start (project root is the MLproject/ subfolder) ---
+# Sanity check (project root):
+# You must see BOTH "environment.yml" and "main.py" here.
+# If you only see a subfolder called "MLproject/", then run:
+cd MLproject
+
+# Only run this if you do NOT see environment.yml and main.py in the current directory.
+# Copy/paste quick start (only if the runnable root is MLproject/)
 
 git clone https://github.com/Asiadigi/Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject.git
 cd Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject
