@@ -115,7 +115,7 @@ cd Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject
 # If you only see a subfolder called "MLproject/", run:
 #   cd MLproject
 
-Only run `cd MLproject` if you see a subfolder named `MLproject/`. If you already see `environment.yml` and `main.py` in the current directory, you are already at the project root—do NOT `cd MLproject`.
+# Only run `cd MLproject` if you see a subfolder named `MLproject/`. If you already see `environment.yml` and `main.py` in the current directory, you are already at the project root—do NOT `cd MLproject`.
 
 
 # Only run this if you do NOT see environment.yml and main.py in the current directory.
@@ -123,7 +123,14 @@ Only run `cd MLproject` if you see a subfolder named `MLproject/`. If you alread
 
 git clone https://github.com/Asiadigi/Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject.git
 cd Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject
+
+# If you see a folder called MLproject, then:
 cd MLproject
+
+conda env create -f environment.yml
+conda activate mlproject
+python main.py
+
 
 # Sanity check: you should now see environment.yml and main.py
 # Windows (PowerShell):
