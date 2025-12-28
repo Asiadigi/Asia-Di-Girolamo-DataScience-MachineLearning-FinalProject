@@ -100,3 +100,57 @@ Specifically, AI assistance was used for:
 - Debugging & Error Resolution: Solving complex compatibility issues (e.g., the scikit-learn vs. CatBoost version conflict) and fixing execution errors.
 - Code Refactoring: Optimizing the project structure into modular components (src/ folder).
 For more details, see AI_LOG.md.
+
+> **Important (project root):** The runnable code is inside the `MLproject/` subfolder of this repository.
+> After cloning, you must `cd` into `MLproject/` **before** creating the conda environment or running any scripts.
+
+### Step 0 — Move into the correct folder
+
+After cloning the repository, you must move into the `MLproject/` folder (this is the runnable project root).
+
+# --- Copy/paste quick start (project root is the MLproject/ subfolder) ---
+
+git clone https://github.com/Asiadigi/Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject.git
+cd Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject
+cd MLproject
+
+# Sanity check: you should now see environment.yml and main.py
+# Windows (PowerShell):
+dir
+# macOS/Linux:
+ls
+
+### Step 1 — Create the conda environment
+# --- Create / update the conda environment ---
+conda env create -f environment.yml
+conda activate mlproject
+
+# If the environment already exists, update it with:
+conda env update -f environment.yml --prune
+conda activate mlproject
+
+# --- Run the project ---
+python main.py
+
+
+> If the environment already exists, update it with:
+> ```bash
+> conda env update -f environment.yml --prune
+conda activate mlproject
+> ```
+> **Windows note (PowerShell):** if `conda activate mlproject` does not work, open **Anaconda Prompt** (recommended) and re-run the commands.
+> Alternatively, run once:
+> ```powershell
+> conda init powershell
+> ```
+> then **restart PowerShell** and try again.
+
+### Step 2 - Run the project
+After running, the project will train/evaluate the models and generate evaluation artifacts (metrics + plots).
+Check these folders for outputs:
+
+report/project_report.pdf (final report PDF)
+
+report/project_report.md (markdown source)
+
+notebooks/credit_default_prediction.ipynb (full notebook)

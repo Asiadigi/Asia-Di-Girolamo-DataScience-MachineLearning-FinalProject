@@ -11,9 +11,9 @@ dependencies:
   - imbalanced-learn
   - matplotlib
   - seaborn
-
-  # Modelli extra
-  - xgboost
-  - lightgbm
-  - catboost
-  - interpret
+  - pip
+  - pip:
+      - xgboost
+      - lightgbm
+      - catboost
+      - interpret
