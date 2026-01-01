@@ -122,9 +122,11 @@ cd Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject
 # Copy/paste quick start (only if the runnable root is MLproject/)
 
 git clone https://github.com/Asiadigi/Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject.git
+
 cd Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject
 
-conda env create -f environment.yml
+conda env create -f environment.yml 
+
 conda activate mlproject
 
 python main.py
