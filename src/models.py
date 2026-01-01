@@ -6,7 +6,11 @@ from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
-from interpret.glassbox import ExplainableBoostingClassifier
+try:
+    from interpret.glassbox import ExplainableBoostingClassifier
+except ImportError:
+    ExplainableBoostingClassifier = None
+
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
