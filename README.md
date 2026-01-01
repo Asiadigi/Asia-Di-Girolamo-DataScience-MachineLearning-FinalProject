@@ -129,6 +129,10 @@ cd MLproject
 
 conda env create -f environment.yml
 conda activate mlproject
+
+# Fix compatibilità CatBoost + scikit-learn (se compare errore __sklearn_tags__)
+pip install "scikit-learn==1.5.2"
+
 python main.py
 
 

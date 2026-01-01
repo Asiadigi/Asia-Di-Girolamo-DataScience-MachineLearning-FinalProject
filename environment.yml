@@ -7,7 +7,7 @@ dependencies:
   - python=3.11
   - numpy
   - pandas
-  - scikit-learn
+  - scikit-learn=1.5.2
   - imbalanced-learn
   - matplotlib
   - seaborn
