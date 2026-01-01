@@ -124,8 +124,7 @@ cd Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject
 git clone https://github.com/Asiadigi/Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject.git
 cd Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject
 
-# If you see a folder called MLproject, then:
-cd MLproject
+
 # create the environment
 conda env create -f environment.yml
 conda activate mlproject

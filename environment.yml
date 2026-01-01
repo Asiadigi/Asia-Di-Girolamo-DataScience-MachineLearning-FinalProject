@@ -5,16 +5,22 @@ channels:
 
 dependencies:
   - python=3.11
+  - pip
+
+  # Core scientific stack (conda, no DLL issues)
   - numpy
   - pandas
   - scipy
-  - scikit-learn>=1.6
+
+  # ML stack (pin for CatBoost compatibility)
+  - scikit-learn=1.5.2
   - imbalanced-learn
-  - matplotlib
-  - seaborn
+
+  # Models (install via conda-forge)
+  - catboost>=1.2.5
   - xgboost
   - lightgbm
-  - catboost>=1.2.5
-  - pip
-  - pip:
-      - interpret
+
+  # Plots
+  - matplotlib
+  - seaborn
