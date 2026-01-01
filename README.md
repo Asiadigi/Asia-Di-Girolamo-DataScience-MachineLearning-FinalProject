@@ -130,10 +130,10 @@ cd MLproject
 conda env create -f environment.yml
 conda activate mlproject
 
-# riporta sklearn a una versione compatibile con interpret-core
+# update sklearn to a version compatible with interpret-core
 pip install -U "scikit-learn>=1.6.0"
 
-# aggiorna CatBoost (fix del problema __sklearn_tags__)
+# update CatBoost (fix the __sklearn_tags__ problem)
 pip install -U catboost
 
 python main.py
