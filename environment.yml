@@ -7,7 +7,7 @@ dependencies:
   - python=3.11
   - numpy
   - pandas
-  - scikit-learn=1.5.2
+  - scikit-learn>=1.6
   - imbalanced-learn
   - matplotlib
   - seaborn
@@ -15,5 +15,5 @@ dependencies:
   - pip:
       - xgboost
       - lightgbm
-      - catboost
+      - catboost>=1.2.5
       - interpret
