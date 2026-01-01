@@ -3,9 +3,12 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
+
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
+
+# Optional dependency: interpret (EBM)
 try:
     from interpret.glassbox import ExplainableBoostingClassifier
 except ImportError:
@@ -15,29 +18,33 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
 
+
 def get_preprocessor(numeric_features, categorical_features):
     """
     Creates a preprocessing pipeline.
     """
     numeric_transformer = Pipeline(steps=[
-        ('scaler', StandardScaler())
+        ("scaler", StandardScaler())
     ])
 
     categorical_transformer = Pipeline(steps=[
-        ('onehot', OneHotEncoder(handle_unknown='ignore'))
+        ("onehot", OneHotEncoder(handle_unknown="ignore"))
     ])
 
     preprocessor = ColumnTransformer(
         transformers=[
-            ('num', numeric_transformer, numeric_features),
-            ('cat', categorical_transformer, categorical_features)
-        ])
-    
+            ("num", numeric_transformer, numeric_features),
+            ("cat", categorical_transformer, categorical_features),
+        ]
+    )
+
     return preprocessor
+
 
 def get_models():
     """
     Returns a dictionary of models to train.
+    EBM (interpret) is optional: if interpret is not installed, it is skipped.
     """
     models = {
         "Logistic Regression": LogisticRegression(max_iter=1000, random_state=42),
@@ -46,16 +53,21 @@ def get_models():
         "KNN": KNeighborsClassifier(),
         "Gaussian NB": GaussianNB(),
         "Decision Tree": DecisionTreeClassifier(random_state=42),
-        "XGBoost": XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42),
+        "XGBoost": XGBClassifier(
+            use_label_encoder=False,
+            eval_metric="logloss",
+            random_state=42
+        ),
         "LightGBM": LGBMClassifier(random_state=42, verbose=-1),
         "CatBoost": CatBoostClassifier(verbose=0, random_state=42),
     }
 
-    # Add EBM only if interpret is installed
+    # Add EBM only if interpret is available
     if ExplainableBoostingClassifier is not None:
         models["EBM"] = ExplainableBoostingClassifier(random_state=42)
     else:
         print("Interpret not installed -> skipping EBM.")
 
     return models
+
 
