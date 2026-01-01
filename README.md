@@ -124,16 +124,8 @@ cd Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject
 git clone https://github.com/Asiadigi/Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject.git
 cd Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject
 
-
-# create the environment
 conda env create -f environment.yml
 conda activate mlproject
-
-# update sklearn to a version compatible with interpret-core
-pip install -U "scikit-learn>=1.6.0"
-
-# update CatBoost (fix the __sklearn_tags__ problem)
-pip install -U catboost
 
 python main.py
 
