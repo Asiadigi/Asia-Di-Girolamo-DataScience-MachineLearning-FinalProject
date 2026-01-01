@@ -7,20 +7,16 @@ dependencies:
   - python=3.11
   - pip
 
-  # Core scientific stack (conda, no DLL issues)
-  - numpy
+  - numpy<2
   - pandas
   - scipy
 
-  # ML stack (pin for CatBoost compatibility)
   - scikit-learn=1.5.2
   - imbalanced-learn
 
-  # Models (install via conda-forge)
   - catboost>=1.2.5
   - xgboost
   - lightgbm
 
-  # Plots
   - matplotlib
   - seaborn
