@@ -49,6 +49,13 @@ def get_models():
         "XGBoost": XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42),
         "LightGBM": LGBMClassifier(random_state=42, verbose=-1),
         "CatBoost": CatBoostClassifier(verbose=0, random_state=42),
-        "EBM": ExplainableBoostingClassifier(random_state=42)
     }
+
+    # Add EBM only if interpret is installed
+    if ExplainableBoostingClassifier is not None:
+        models["EBM"] = ExplainableBoostingClassifier(random_state=42)
+    else:
+        print("Interpret not installed -> skipping EBM.")
+
     return models
+
