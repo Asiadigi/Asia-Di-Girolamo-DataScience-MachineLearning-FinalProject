@@ -127,13 +127,16 @@ cd Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject
 # If you see a folder called MLproject, then:
 cd MLproject
 
-conda env create -f environment.yml
 conda activate mlproject
 
-# Fix compatibilità CatBoost + scikit-learn (se compare errore __sklearn_tags__)
-pip install "scikit-learn==1.5.2"
+# riporta sklearn a una versione compatibile con interpret-core
+pip install -U "scikit-learn>=1.6.0"
+
+# aggiorna CatBoost (fix del problema __sklearn_tags__)
+pip install -U catboost
 
 python main.py
+
 
 
 # Sanity check: you should now see environment.yml and main.py
