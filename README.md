@@ -126,7 +126,8 @@ cd Asia-Di-Girolamo-DataScience-MachineLearning-FinalProject
 
 # If you see a folder called MLproject, then:
 cd MLproject
-
+# create the environment
+conda env create -f environment.yml
 conda activate mlproject
 
 # riporta sklearn a una versione compatibile con interpret-core
